@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>企业法律体检问卷</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+  <h1>企业法律体检问卷</h1>
+
+  <form id="questionnaireForm">
+    <!-- 在此处添加问题和选项 -->
+    <label>问题 1: 公司是否按照相关法律法规进行合法注册？</label>
+    <input type="radio" name="q1" value="是">是
+    <input type="radio" name="q1" value="否">否
+    <br><br>
+
+    <label>问题 2: 公司的劳动合同是否符合当地劳动法规定？</label>
+    <input type="radio" name="q2" value="是">是
+    <input type="radio" name="q2" value="否">否
+    <br><br>
+
+    <!-- 其他问题... -->
+
+    <button type="submit">提交</button>
+  </form>
+
+  <div id="reportContainer" style="display: none;">
+    <h2>企业法律体检报告</h2>
+    <div id="report"></div>
+  </div>
+
+  <script>
+    const form = document.getElementById('questionnaireForm');
+    const reportContainer = document.getElementById('reportContainer');
+    const report = document.getElementById('report');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const formData = new FormData(form);
+      const answers = {};
+      for (let [key, value] of formData.entries()) {
+        answers[key] = value;
+      }
+
+      const response = await $.post('https://api.openai.com/v1/engines/davinci-codex/completions', {
+        prompt: '根据企业法律体检问卷的回答生成报告。',
+        max_tokens: 100,
+        temperature: 0.5,
+        n: 1,
+        stop: ['\n']
+      }, {
+        headers: {
+          'Authorization': 'Bearer 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' // 替换为你的OpenAI GPT API密钥
+        }
+      });
+
+      const reportText = response.choices[0].text.trim();
+      report.innerHTML = reportText;
+      reportContainer.style.display = 'block';
+    });
+  </script>
+</body>
+</html>
